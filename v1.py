@@ -75,29 +75,89 @@ def render_plays():
                     pygame.draw.line(screen, X_COLOR, tr, bl, LINE_THICKNESS)
 
 
+def win_check():
+    for i in range(3):
+        # Rows
+        if grid[i][0] == grid[i][1] == grid[i][2] != "":
+            show_win(grid[i][0], "row", i)
+            return True
+        
+        # Columns
+        if grid[0][i] == grid[1][i] == grid[2][i] != "":
+            show_win(grid[0][i], "col", i)
+            return True
+
+    # Diagonals
+    if grid[0][0] == grid[1][1] == grid[2][2] != "":
+        show_win(grid[1][1], "tl2br", None)
+        return True
+    if grid[0][2] == grid[1][1] == grid[2][0] != "":
+        show_win(grid[1][1], "tr2bl", None)
+        return True
+
+    return False
+
+
+def show_win(letter, line_type, line_num):
+    current_w, current_h = current_size
+    third_w, third_h = third_size
+    if letter == "x":
+        win_color = X_COLOR
+    else:
+        win_color = O_COLOR
+
+    if line_type == "row":
+        # Center Y of the winning row
+        center_y = round((third_h / 2) + line_num * third_h)
+        start_pos = (0, center_y)
+        end_pos = (current_w, center_y)
+
+    elif line_type == "col":
+        # Center X of the winning column
+        center_x = round((third_w / 2) + line_num * third_w)
+        start_pos = (center_x, 0)
+        end_pos = (center_x, current_h)
+
+    elif line_type == "tl2br":
+        # Top-Left corner to Bottom-Right corner
+        start_pos = (0, 0)
+        end_pos = (current_w, current_h)
+
+    elif line_type == "tr2bl":
+        # Top-Right corner to Bottom-Left corner
+        start_pos = (current_w, 0)
+        end_pos = (0, current_h)
+
+    # Draw line across the winning cells
+    pygame.draw.line(screen, win_color, start_pos, end_pos, LINE_THICKNESS*2)
+
+
 # main game loop
 running = True
+win = False
 while running:
     for event in pygame.event.get():
-        # check for pygame.QUIT
         if event.type == pygame.QUIT:
             running = False
 
-        # check for screen resize
         elif event.type == pygame.VIDEORESIZE:
             update_dimensions(event.size)
 
-        # check for player click
+        # initiate turn on mouse click
         elif event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
-             player = player_turn(player, event.pos)
+            if win:
+                grid = [
+                    ["", "", ""], # row 1
+                    ["", "", ""], # row 2
+                    ["", "", ""]  # row 3
+                ]
+                win = False
+            player = player_turn(player, event.pos)
 
-
-    # wipe last frame
     screen.fill((255,255,255))
-
-    # render, then flip() the display
     render_background()
     render_plays()
+    win = win_check()
     pygame.display.flip()
 
     clock.tick(60) 
