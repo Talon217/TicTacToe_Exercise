@@ -37,8 +37,8 @@ class Logic:
         if self.grid[0][2] == self.grid[1][1] == self.grid[2][0] and self.grid[1][1] != "":
             return f"{self.grid[1][1].upper()} Wins!"
 
-        def is_board_full(self) -> bool:
-            for row in self.grid:
-                if "" in row:
-                    return False
-            return True
+    def is_board_full(self) -> bool:
+        for row in self.grid:
+            if "" in row:
+                return False
+        return True
