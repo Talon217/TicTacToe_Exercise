@@ -22,20 +22,22 @@ class Logic:
     def switch_player(self) -> None:
         self.current_player = "o" if self.current_player == "x" else "x"
 
-    def win_check(self) -> str:
-        for row in self.grid:
+    def win_check(self):
+        for r, row in enumerate(self.grid):
             if row[0] == row[1] == row[2] and row[0] != "":
-                return f"{row[0].upper()} Wins!"
+                return (row[0], "row", r)
 
         for col in range(3):
             if self.grid[0][col] == self.grid[1][col] == self.grid[2][col] and self.grid[0][col] != "":
-                return f"{self.grid[0][col].upper()} Wins!"
+                return (self.grid[0][col], "col", col)
 
         #check diagonals
         if self.grid[0][0] == self.grid[1][1] == self.grid[2][2] and self.grid[1][1] != "":
-            return f"{self.grid[1][1].upper()} Wins!"
+            return (self.grid[1][1], "tlbr", None)
         if self.grid[0][2] == self.grid[1][1] == self.grid[2][0] and self.grid[1][1] != "":
-            return f"{self.grid[1][1].upper()} Wins!"
+            return (self.grid[1][1], "bltr", None)
+
+        return None
 
     def is_board_full(self) -> bool:
         for row in self.grid:
